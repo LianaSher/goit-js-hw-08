@@ -11,4 +11,10 @@ function currentTime(data) {
   localStorage.setItem(KEY_TIME, data.seconds);
 }
 
-player.setCurrentTime(localStorage.getItem(KEY_TIME));
+let dataCurrentTime = localStorage.getItem(KEY_TIME);
+
+if (!dataCurrentTime) {
+  dataCurrentTime = 0;
+}
+
+player.setCurrentTime(dataCurrentTime);

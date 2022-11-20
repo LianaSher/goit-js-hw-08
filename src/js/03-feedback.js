@@ -2,53 +2,39 @@ import throttle from 'lodash.throttle';
 
 const KEY_STORAGE = 'feedback-form-state';
 
-const formValues = {
-  email: '',
-  message: '',
-};
+let formValues = {};
 
 const refs = {
   formEl: document.querySelector('.feedback-form'),
-  inputEmail: document.querySelector('input[name="email"]'),
-  inputMessage: document.querySelector('textarea[name="message"]'),
   btnSubmit: document.querySelector('button'),
 };
 
 refs.formEl.addEventListener('input', throttle(onFormInput, 500));
-refs.btnSubmit.addEventListener('click', onBtnSubmit);
+refs.formEl.addEventListener('submit', onFormSubmit);
 
-function onBtnSubmit(evt) {
-  evt.preventDefault();
-  refs.formEl.reset();
+function onFormSubmit(event) {
+  event.preventDefault();
+  event.currentTarget.reset();
   localStorage.removeItem(KEY_STORAGE);
   console.log(formValues);
 }
 
 function onFormInput(event) {
-  const target = event.target;
+  formValues[event.target.name] = event.target.value.trim();
 
-  switch (target) {
-    case refs.inputEmail:
-      formValues.email = target.value;
-
-      break;
-    case refs.inputMessage:
-      formValues.message = target.value;
-
-      break;
-  }
   localStorage.setItem(KEY_STORAGE, JSON.stringify(formValues));
 }
 
 function showSavedText() {
   const savedText = localStorage.getItem(KEY_STORAGE);
   if (savedText) {
-    const savedObj = JSON.parse(savedText);
+    formValues = JSON.parse(savedText);
 
-    refs.inputEmail.value = savedObj.email;
-    refs.inputMessage.value = savedObj.message;
+    const keys = Object.keys(formValues);
+    for (const key of keys) {
+      refs.formEl.elements[key].value = formValues[key];
+    }
   }
 }
 
 showSavedText();
-//
